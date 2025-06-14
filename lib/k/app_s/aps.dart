@@ -50,8 +50,6 @@ class Aps {
     updateNetConfig();
     initMisc();
     loadStartupSettings();
-
-
   }
 
   // 初始化主题设置
@@ -68,7 +66,7 @@ class Aps {
     var roomsList = await AppDatabase().RoomSetting.getAllRooms();
     roomsList.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     rooms.value = roomsList;
-  
+
     if (rooms.value.isEmpty) {
       final s = Room(
         name: RandomName(),
@@ -92,15 +90,16 @@ class Aps {
     closeMinimize.value = await AppDatabase().AllSettings.getCloseMinimize();
     customVpn.value = await AppDatabase().AllSettings.getCustomVpn();
     beta.value = await AppDatabase().AllSettings.getBeta();
-    autoCheckUpdate.value = await AppDatabase().AllSettings.getAutoCheckUpdate();
-    downloadAccelerate.value = await AppDatabase().AllSettings.getDownloadAccelerate();
+    autoCheckUpdate.value =
+        await AppDatabase().AllSettings.getAutoCheckUpdate();
+    downloadAccelerate.value =
+        await AppDatabase().AllSettings.getDownloadAccelerate();
     // window平台
     if (Platform.isWindows) {
-          updateFirewallStatus();
-          autoSetMTU.value = await AppDatabase().AllSettings.getAutoSetMTU();
-    Aps().updateConnections();
+      updateFirewallStatus();
+      autoSetMTU.value = await AppDatabase().AllSettings.getAutoSetMTU();
+      Aps().updateConnections();
     }
-    
   }
 
   // ConnectionManager
@@ -108,7 +107,8 @@ class Aps {
 
   // 更新连接管理器列表
   Future<void> updateConnections() async {
-    connections.value = await AppDatabase().netConfigSetting.getConnectionManagers();
+    connections.value =
+        await AppDatabase().netConfigSetting.getConnectionManagers();
   }
 
   // 添加连接管理器
@@ -119,7 +119,10 @@ class Aps {
 
   // 更新连接管理器
   Future<void> updateConnection(int index, ConnectionManager manager) async {
-    await AppDatabase().netConfigSetting.updateConnectionManager(index, manager);
+    await AppDatabase().netConfigSetting.updateConnectionManager(
+      index,
+      manager,
+    );
     await updateConnections();
   }
 
@@ -131,9 +134,13 @@ class Aps {
 
   // 更新连接管理器启用状态
   Future<void> updateConnectionEnabled(int index, bool enabled) async {
-    await AppDatabase().netConfigSetting.updateConnectionManagerEnabled(index, enabled);
+    await AppDatabase().netConfigSetting.updateConnectionManagerEnabled(
+      index,
+      enabled,
+    );
     await updateConnections();
   }
+
   // 日志内容
   final Signal<List<String>> logs = signal([]);
   // 开机自启动
@@ -148,39 +155,60 @@ class Aps {
   /// userListSimple
   final Signal<bool> userListSimple = signal(false); // 玩家列表
 
-    /// beta - 参与测试版
+  /// 添加排序选项状态
+  final Signal<int> sortOption = signal(0); // 0: 不排序, 1: 按延迟排序, 2: 按用户名长度排序
+
+  /// 设置sortOption
+  Future<void> setSortOption(int option) async {
+    sortOption.value = option;
+  }
+
+  /// 添加排序顺序状态
+  final Signal<int> sortOrder = signal(0); // 0: 升序, 1: 降序
+
+  /// 添加显示模式状态
+  final Signal<int> displayMode = signal(0); // 0: 默认, 1: 仅用户, 2: 仅服务器
+
+  /// 设置sortOrder
+  Future<void> setSortOrder(int order) async {
+    sortOrder.value = order;
+  }
+
+  /// 设置displayMode
+  Future<void> setDisplayMode(int mode) async {
+    displayMode.value = mode;
+  }
+
+  /// beta - 参与测试版
   final Signal<bool> beta = signal(false);
-  
 
-
-  
   /// autoCheckUpdate - 自动检查更新
   final Signal<bool> autoCheckUpdate = signal(true);
-  
+
   /// downloadAccelerate - 下载加速
   final Signal<String> downloadAccelerate = signal('https://gh.xmly.dev/');
 
-    /// 设置beta
+  /// 设置beta
   Future<void> setBeta(bool value) async {
     beta.value = value;
     await AppDatabase().AllSettings.setBeta(value);
   }
-  
+
   /// 设置autoCheckUpdate
   Future<void> setAutoCheckUpdate(bool value) async {
     autoCheckUpdate.value = value;
     await AppDatabase().AllSettings.setAutoCheckUpdate(value);
   }
-  
+
   /// 设置downloadAccelerate
   Future<void> setDownloadAccelerate(String value) async {
     downloadAccelerate.value = value;
     await AppDatabase().AllSettings.setDownloadAccelerate(value);
   }
-  
 
   ///防火墙状态 只要有一个没有关闭就是false
   final Signal<bool> firewallStatus = signal(false);
+
   /// autoSetMTU
   final Signal<bool> autoSetMTU = signal(true); // 自动设置MTU
   /// 设置autoSetMTU
@@ -189,6 +217,7 @@ class Aps {
     await AppDatabase().AllSettings.setAutoSetMTU(value);
     setInterfaceMetric(interfaceName: "astral", metric: 0);
   }
+
   // 设置防火墙状态
   Future<void> setFirewall(bool value) async {
     firewallStatus.value = value;
@@ -197,9 +226,11 @@ class Aps {
     await setFirewallStatus(profileIndex: 3, enable: value);
     updateListenListFromDb();
   }
+
   // 更新防火墙状态
   Future<void> updateFirewallStatus() async {
-    firewallStatus.value = await getFirewallStatus(profileIndex: 1) &&
+    firewallStatus.value =
+        await getFirewallStatus(profileIndex: 1) &&
         await getFirewallStatus(profileIndex: 2) &&
         await getFirewallStatus(profileIndex: 3);
   }
@@ -244,8 +275,6 @@ class Aps {
     await AppDatabase().AllSettings.updateListenList(index, listen);
     listenList.value = await AppDatabase().AllSettings.getListenList();
   }
-
-
 
   /// **********************************************************************************************************
   /// 主题颜色
@@ -398,7 +427,7 @@ class Aps {
         await database.netConfigSetting.getDisableRelayKcp(); // 禁用中继KCP
     proxyForwardBySystem.value =
         await database.netConfigSetting.getProxyForwardBySystem(); // 代理转发系统
-    accept_dns.value = await database.netConfigSetting.getAcceptDns();      
+    accept_dns.value = await database.netConfigSetting.getAcceptDns();
   }
 
   // 更新网络命名空间
@@ -617,7 +646,7 @@ class Aps {
   /// 添加房间
   Future<void> addRoom(Room room) async {
     await AppDatabase().RoomSetting.addRoom(room);
-   debugPrint("添加房间" + room.name);
+    debugPrint("添加房间" + room.name);
     rooms.value = await AppDatabase().RoomSetting.getAllRooms();
   }
 
@@ -661,8 +690,6 @@ class Aps {
     selectroom.value = await AppDatabase().AllSettings.getRoom();
   }
 
-
-
   /// 服务器列表
   final Signal<List<ServerMod>> servers = signal([]);
 
@@ -673,7 +700,7 @@ class Aps {
       servers.value = await AppDatabase().ServerSetting.getAllServers();
     } catch (e, stackTrace) {
       // 记录错误日志
-     debugPrint('添加服务器失败: $e\n$stackTrace');
+      debugPrint('添加服务器失败: $e\n$stackTrace');
       // 可以考虑向用户显示错误提示
     }
   }
@@ -710,10 +737,7 @@ class Aps {
   }
 
   /// 设置是否启用
-  Future<List<ServerMod>> setServerEnable(
-    ServerMod server,
-    bool enable,
-  ) async {
+  Future<List<ServerMod>> setServerEnable(ServerMod server, bool enable) async {
     server.enable = enable;
     await AppDatabase().ServerSetting.updateServer(server);
     servers.value = await AppDatabase().ServerSetting.getAllServers();

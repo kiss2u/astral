@@ -40,6 +40,7 @@ class _ServerCardState extends State<ServerCard> {
         ),
         child: InkWell(
           // 去掉 onTap
+          onTap: () => {},
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

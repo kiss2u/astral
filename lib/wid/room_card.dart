@@ -44,18 +44,21 @@ class _RoomCardState extends State<RoomCard> {
       child: Card(
         elevation: 4,
         // 仅在选中时应用亮度调整，未选中使用默认表面色
-        color: selectedRoom?.id == room.id 
-            ? (Theme.of(context).brightness == Brightness.dark
-                ? HSLColor.fromColor(Theme.of(context).colorScheme.primary)
-                    .withLightness(0.10) // 深色模式选中亮度10%
-                    .toColor()
-                : HSLColor.fromColor(Theme.of(context).colorScheme.primary)
-                    .withLightness(0.75) // 浅色模式选中亮度75%
-                    .toColor())
-            : Theme.of(context).colorScheme.surface, // 未选中使用默认表面色
+        color:
+            selectedRoom?.id == room.id
+                ? Theme.of(context).brightness == Brightness.dark
+                    ? HSLColor.fromColor(Theme.of(context).colorScheme.primary)
+                        .withLightness(0.10) // 深色模式选中亮度10%
+                        .toColor()
+                    : HSLColor.fromColor(Theme.of(context).colorScheme.primary)
+                        .withLightness(0.75) // 浅色模式选中亮度75%
+                        .toColor()
+                : Theme.of(
+                  context,
+                ).colorScheme.surfaceContainerLow, // 未选中使用默认表面色
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          // 添加选中或悬浮状态边框
+          // 边框保持原逻辑（选中或悬浮时显示）
           side: BorderSide(
             color:
                 (selectedRoom?.id == room.id || _isHovered)

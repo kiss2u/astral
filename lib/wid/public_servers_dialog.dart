@@ -31,8 +31,8 @@ class PublicServersDialog extends StatefulWidget {
           tag: 'public_servers_dialog',
           child: Dialog(
             child: SizedBox(
-              width: 500,
-              height: 600,
+              width: 400, // PC端统一宽度
+              height: 600, // 统一高度
               child: PublicServersDialog(
                 onAddServer: onAddServer,
               ),
@@ -330,7 +330,7 @@ class _PublicServersDialogState extends State<PublicServersDialog> with TickerPr
         left: 16,
         right: 16,
         bottom: 16,
-      ),
+      ), // 统一边距
       child: ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: _filteredServers.length,
@@ -417,7 +417,7 @@ class _PublicServerItemState extends State<_PublicServerItem> {
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16), // 统一圆角
           color: (theme.brightness == Brightness.light)
               ? colorScheme.surfaceVariant.withOpacity(1.0)
               : colorScheme.surfaceVariant.withOpacity(1.0), 
@@ -433,15 +433,14 @@ class _PublicServerItemState extends State<_PublicServerItem> {
             title: Text(
               widget.server['name']!, 
               style: TextStyle(
-                fontSize: 16, 
+                fontSize: 16, // 统一字体大小
                 color: colorScheme.onSurface
               )
             ),
             subtitle: Text(
               widget.server['url']!,
               style: TextStyle(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w500,
+                color: colorScheme.onSurfaceVariant
               )
             ),
             trailing: Padding(

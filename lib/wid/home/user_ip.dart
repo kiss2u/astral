@@ -24,10 +24,41 @@ class _UserIpBoxState extends State<UserIpBox> {
   bool _isValidIP = true;
 
   bool _isValidIPv4(String ip) {
-    final RegExp ipRegex = RegExp(
-      r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',
-    );
-    return ipRegex.hasMatch(ip);
+    // 检查是否包含子网掩码格式
+    final parts = ip.split('/');
+    if (parts.length > 2) return false;
+
+    // 验证IP地址部分
+    final ipPart = parts[0];
+    if (ipPart.isEmpty) return false;
+
+    // 优化IP地址验证逻辑
+    final octets = ipPart.split('.');
+    if (octets.length != 4) return false;
+
+    for (final octet in octets) {
+      try {
+        final value = int.parse(octet);
+        if (value < 0 || value > 255) return false;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // 如果包含子网掩码，验证子网掩码部分
+    if (parts.length == 2) {
+      final maskPart = parts[1];
+      if (maskPart.isEmpty) return false;
+
+      try {
+        final mask = int.parse(maskPart);
+        if (mask < 0 || mask > 32) return false;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   @override
@@ -118,11 +149,10 @@ class _UserIpBoxState extends State<UserIpBox> {
                 (Aps().Connec_state.watch(context) != CoState.idle)
                     ? false
                     : true,
-            onChanged: (value) {
-            },
+            onChanged: (value) {},
             decoration: InputDecoration(
               labelText: '用户名',
-              // 默认值
+              hintText: '输入喜欢的名字',
               border: const OutlineInputBorder(),
               prefixIcon: Icon(Icons.person, color: colorScheme.primary),
               floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -198,6 +228,8 @@ class _UserIpBoxState extends State<UserIpBox> {
                     },
                     decoration: InputDecoration(
                       labelText: '虚拟网IP',
+                      // 添加提示文本
+                      hintText: '不明白的话自动即可',
                       border: const OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lan, color: colorScheme.primary),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
